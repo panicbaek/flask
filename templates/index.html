@@ -19,5 +19,34 @@
   <h1>Hello Guest!</h1>
   {% endif %}
 
+  <hr>
+  <h1>매크로</h1>
+  {% macro box(item) %}
+    <h1>인기상품</h1>
+    <h2>{{ item }}</h2>
+  {% endmacro %}
+
+  {% for it in items %}
+    {{ box(it) }}
+  {% endfor %}
+
+  <hr>
+  <h1>필터</h1>
+  <p>변수에  출력되는 값을 변환해주는거</p>
+  <h2>{{ name | default("woosik") }}</h2>
+
+  <hr>
+  <p>{{ user.name | default("Guest") | upper }}</p>
+  <p>{{ msg | safe }}</p>
+  <p>{{ items | length }}</p>
+  <p>{{ items | join(", ") }}</p>
+  <p>{{ 3.141592 | round(2) }}</p>
+  <p>{{ today }}</p>
+  <p>{# {{ today | datetime.strftime("%Y-%m-%d") }} #}</p>
+  <p>{{ today.strftime("%Y-%m-%d") }}</p>
+
+  <h1>url_for</h1>
+  <a href="{{ url_for('show_user', username='woosik') }}">클릭</a>
+
 </body>
 </html>

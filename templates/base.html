@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}기본값:default{% endblock %}</title>
+</head>
+<body>
+  <header>
+    <h1>네비바임</h1>
+  </header>
+
+  <main>
+    {% block content %}
+    {% endblock %}
+  </main>
+
+  <footer>
+    <h3>footer 영역</h3>
+  </footer>
+  
+</body>
+</html>

@@ -1,4 +1,5 @@
-from flask import Flask, jsonify, Response, json, render_template, request
+from flask import Flask, jsonify, Response, json, render_template, request, redirect, url_for
+from datetime import datetime
 
 # jsonify json모듈을 변환 시키는 파일
 # Respons response형식으로 변환시켜주는 라이브러리
@@ -7,6 +8,31 @@ from flask import Flask, jsonify, Response, json, render_template, request
 # request 요청받기 위한 라이브러리
 
 app = Flask(__name__) # 파일이름을 등록
+
+# 2000 Byte짜리 파일이 10개가 만들어지면 다시 처음으로 돌아감
+if not app.debug:
+  import logging
+  from logging.handlers import RotatingFileHandler
+  file_handler = RotatingFileHandler(
+    'server.log', maxBytes=2000, backupCount=10,
+  )
+  file_handler.setLevel(logging.WARNING)
+  app.logger.addHandler(file_handler)
+
+
+@app.errorhandler(404) # 존재하지 않는 주소로 요청을 하면 작동하는 에러코드
+def page_not_found(error):
+  app.logger.error(error)
+  return "<h1>404 Error 해당 페이지는 존재하지 않습니다.</h1>", 404
+
+@app.before_request # 요청이 올때마다 실행함
+def before_request_fn():
+  print("Http요청이 올때마다 실행")
+
+@app.after_request 
+def after_request_fn(response):
+  print('Http요청 처리가 끝난 후 브라우저에 응답하기전 실행')
+  return response
 
 @app.route("/") # 자바로치면 GetMapping("/")임
 def test():
@@ -97,11 +123,33 @@ def index():
   title = "타이틀!!"
   name = "고길동"
   item_list = ['apple', 'banana', 'melon', 'mango']
+
+  user = {
+    "name" : None,
+    "items" : ['사과', '딸기', '배']
+  }
+  msg = "<b>Hello Flask</b>"
+  today = datetime.now()
   
   return render_template(
-    'index.html', title = title, name = name, items=item_list
+    'index.html', title = title, name = name, items=item_list,
+    user = user, msg=msg, today=today
     )
-  
+
+@app.route("/home")
+def home():
+  return render_template("home.html")
+
+# === url_for ===
+# url을 통해서 접근 가능한 라우터들을 함수명으로 접근하도록 해줌
+@app.route('/user/<username>')
+def show_user(username):
+  return f"이름 : {username}"
+
+@app.route('/redirect/<name>')
+def redirect_aa(name):
+  print(f"redirect에서 받은 이름 : {name}")
+  return redirect(url_for('show_user', username=name))
 
 
 
